@@ -278,6 +278,13 @@ def run_search():
     goal_label = data['goal_label']
     algorithm = data['algorithm']
     
+    # Validate nodes exist
+    valid_labels = {node['label'] for node in graph_data.data['nodes']}
+    if start_label not in valid_labels:
+        return jsonify({'error': f'Invalid start node: {start_label}'}), 400
+    if goal_label not in valid_labels:
+        return jsonify({'error': f'Invalid goal node: {goal_label}'}), 400
+        
     algorithms = {
         'dfs': search_algorithms.dfs,
         'bfs': search_algorithms.bfs,
@@ -291,6 +298,8 @@ def run_search():
             'paths': paths,
             'iteration_counts': iteration_counts
         })
+    except KeyError:
+        return jsonify({'error': f'Invalid algorithm: {algorithm}'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
